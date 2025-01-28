@@ -31,7 +31,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <Script
-          src={`http://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_API_KEY}&libraries=places`}
+          src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_API_KEY}&libraries=places`}
           strategy="beforeInteractive"
         />
       </head>

@@ -2,7 +2,7 @@
 import { Box, Button, Checkbox, CircularProgress, FormControl, InputLabel, ListItemText, MenuItem, Select, SelectChangeEvent, TextField, Typography } from "@mui/material";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import {useEffect, useRef, useState } from "react";
+import {ReactNode, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import {
   Table,
@@ -22,6 +22,7 @@ interface SubscriptionData {
   customerId?: any,
 }
 interface RoofType {
+  name: ReactNode;
   id: string | number;
   roofType: string;
   additionalFee: number;
@@ -35,6 +36,7 @@ type WasteTier = {
 interface Material {
   additionalFee: any;
   materialCost: any;
+  materialName: ReactNode;
   id: string;
   name: string;
   cost: number;
@@ -60,33 +62,33 @@ const SolarReport = ({ solarData, state  }: any) => {
   const [wasteTiers, setWasteTiers] = useState<WasteTier[]>([]); // ensure it's an array of WasteTier objects
   const [currentWasteTier, setCurrentWasteTier] = useState("");
 
-  // useEffect(() => {
-  //   axios
-  //     .get("/api/roofTypes")
-  //     .then((response) => setRoofTypes(response.data.data))
-  //     .catch((error) => console.error("Error fetching roof types:", error));
-  // }, []);
+  useEffect(() => {
+    axios
+      .get("/api/roofTypes")
+      .then((response) => setRoofTypes(response.data.data))
+      .catch((error) => console.error("Error fetching roof types:", error));
+  }, []);
 
   // Fetch waste tiers
-  // useEffect(() => {
-  //   axios
-  //     .get("/api/waste-tiers")
-  //     .then((response) => setWasteTiers(response.data.data))
-  //     .catch((error) => console.error("Error fetching waste tiers:", error));
-  // }, []);
+  useEffect(() => {
+    axios
+      .get("/api/waste-tiers")
+      .then((response) => setWasteTiers(response.data.data))
+      .catch((error) => console.error("Error fetching waste tiers:", error));
+  }, []);
 
-  // useEffect(() => {
-  //   if (selectedRoofType) {
-  //     const matchedWasteTier = wasteTiers.find(
-  //       (tier) => tier.roofType === selectedRoofType
-  //     );
-  //     const updatedWasteTier = matchedWasteTier ? String(matchedWasteTier.wasteTier) : "0";
-  //     setCurrentWasteTier(updatedWasteTier);
-  //     console.log("Updated waste tier:", updatedWasteTier);  // Debugging log
-  //   } else {
-  //     setCurrentWasteTier("");
-  //   }
-  // }, [selectedRoofType, wasteTiers]);
+  useEffect(() => {
+    if (selectedRoofType) {
+      const matchedWasteTier = wasteTiers.find(
+        (tier) => tier.roofType === selectedRoofType
+      );
+      const updatedWasteTier = matchedWasteTier ? String(matchedWasteTier.wasteTier) : "0";
+      setCurrentWasteTier(updatedWasteTier);
+      console.log("Updated waste tier:", updatedWasteTier);  // Debugging log
+    } else {
+      setCurrentWasteTier("");
+    }
+  }, [selectedRoofType, wasteTiers]);
   
   
   
@@ -195,10 +197,10 @@ const SolarReport = ({ solarData, state  }: any) => {
         toast.error('Please select a roof type and materials');
         return;
       }
-      // const selectedRoofTypeName = roofTypes.find((roof) => roof.id === selectedRoofType)?.name;
+      const selectedRoofTypeName = roofTypes.find((roof) => roof.id === selectedRoofType)?.name;
       const email = localStorage.getItem("email");
       const payload = {
-        // roofType: selectedRoofTypeName || 'clay',
+        roofType: selectedRoofTypeName || 'clay',
         materials: selectedMaterials.map((id) => {
           const material = materials.find((m) => m.id === id);
           return material ? { name: material.name, cost: material.cost } : null;
@@ -716,7 +718,7 @@ useEffect(() => {
   <MenuItem value="" disabled>Select Roof Type</MenuItem>
   {roofTypes.map((roof) => (
     <MenuItem key={roof.id} value={roof.id}>
-      {/* {roof.name} */}
+      {roof.name}
     </MenuItem>
   ))}
 </TextField>
@@ -792,7 +794,7 @@ useEffect(() => {
               {getMaterialWithFee(data.roofTypeName, data.materials|| []).map((material, index) => (
                 <TableRow key={index}>
                   <TableCell>{data.roofTypeName}</TableCell>
-                  {/* <TableCell>{material.materialName}</TableCell> */}
+                  <TableCell>{material.materialName}</TableCell>
                   <TableCell>${material.materialCost.toFixed(2)}</TableCell>
 
                   {/* <TableCell>{material.additionalFee ? `$${material.additionalFee.toFixed(2)}` : "N/A"}</TableCell> */}
